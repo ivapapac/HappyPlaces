@@ -1,4 +1,4 @@
-package com.example.happyplaces
+package com.example.happyplaces.activities
 
 import android.Manifest
 import android.app.AlertDialog
@@ -13,11 +13,15 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
+import com.example.happyplaces.R
+import com.example.happyplaces.database.DatabaseHandler
 import com.example.happyplaces.databinding.ActivityAddHappyPlaceBinding
+import com.example.happyplaces.models.HappyPlaceModel
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -36,11 +40,14 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private var tmpUri: Uri? = null
+    private var imagePath: Uri? = null
+    private var mLatitude: Double = 0.0
+    private var mLongitude: Double = 0.0
 
     private val selectImageFromGalleryResult =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let { binding.ivPlaceImage.setImageURI(uri) }
-            val imagePath = saveImageToInternalStorage(binding.ivPlaceImage.drawable.toBitmap())
+            imagePath = saveImageToInternalStorage(binding.ivPlaceImage.drawable.toBitmap())
             Log.e("Saved image: ", "Path :: $imagePath")
         }
 
@@ -48,7 +55,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
             if (isSuccess) {
                 tmpUri?.let { uri -> binding.ivPlaceImage.setImageURI(uri) }
-                val imagePath = saveImageToInternalStorage(binding.ivPlaceImage.drawable.toBitmap())
+                imagePath = saveImageToInternalStorage(binding.ivPlaceImage.drawable.toBitmap())
                 Log.e("Saved image: ", "Path :: $imagePath")
             }
         }
@@ -75,6 +82,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -104,6 +112,47 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 pictureDialog.show()
+            }
+            R.id.btn_save -> {
+                when {
+                    binding.etTitle.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please enter the title", Toast.LENGTH_SHORT).show()
+                    }
+                    binding.etDescription.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please enter the description", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    binding.etLocation.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please enter the location", Toast.LENGTH_SHORT).show()
+                    }
+                    imagePath == null -> {
+                        Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        val hpm = HappyPlaceModel(
+                            0,
+                            binding.etTitle.text.toString(),
+                            imagePath.toString(),
+                            binding.etDescription.text.toString(),
+                            binding.etDate.text.toString(),
+                            binding.etLocation.text.toString(),
+                            mLatitude,
+                            mLongitude
+                        )
+
+                        val dbh = DatabaseHandler(this)
+                        val result = dbh.addHappyPlace(hpm)
+
+                        if (result > 0) {
+                            Toast.makeText(
+                                this,
+                                "The happy place is created successfully!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                        }
+                    }
+                }
             }
         }
     }
@@ -141,7 +190,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
 
         return FileProvider.getUriForFile(
             applicationContext,
-            "${BuildConfig.APPLICATION_ID}.provider",
+            "${applicationContext.packageName}.provider",
             tmpFile
         )
     }

@@ -1,8 +1,9 @@
-package com.example.happyplaces
+package com.example.happyplaces.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.happyplaces.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
