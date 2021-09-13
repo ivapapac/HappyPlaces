@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mint_cream">#F1FFFA</color>
+    <color name="tea_green">#CCFCCB</color>
+    <color name="celadon">#96E6B3</color>
+    <color name="middle_green">#568259</color>
+    <color name="ebony">#464E47</color>
+    <color name="pale_spring_bud">#EAEFBD</color>
+    <color name="pistachio">#90BE6D</color>
+    <color name="carrot_orange">#EA9010</color>
+    <color name="olive">#37371F</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
