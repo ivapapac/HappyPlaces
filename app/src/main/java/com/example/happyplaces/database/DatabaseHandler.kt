@@ -57,7 +57,10 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_LATITUDE, hpm.latitude)
         contentValues.put(KEY_LONGITUDE, hpm.longitude)
 
-        return db.insert(TABLE_HAPPY_PLACE, null, contentValues)
+        val result = db.insert(TABLE_HAPPY_PLACE, null, contentValues)
+        db.close()
+
+        return result
     }
 
     fun getHappyPlacesList(): ArrayList<HappyPlaceModel> {
@@ -92,5 +95,25 @@ class DatabaseHandler(context: Context) :
         }
 
         return happyPlacesList
+    }
+
+    fun updateHappyPlace(hpm: HappyPlaceModel): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        val whereClause = "$KEY_ID = ${hpm.id}"
+
+        contentValues.put(KEY_ID, hpm.id)
+        contentValues.put(KEY_TITLE, hpm.title)
+        contentValues.put(KEY_IMAGE, hpm.image)
+        contentValues.put(KEY_DESCRIPTION, hpm.description)
+        contentValues.put(KEY_DATE, hpm.date)
+        contentValues.put(KEY_LOCATION, hpm.location)
+        contentValues.put(KEY_LATITUDE, hpm.latitude)
+        contentValues.put(KEY_LONGITUDE, hpm.longitude)
+
+        val result = db.update(TABLE_HAPPY_PLACE, contentValues, whereClause, null).toLong()
+        db.close()
+
+        return result
     }
 }

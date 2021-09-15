@@ -1,9 +1,11 @@
 package com.example.happyplaces.activities
 
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.happyplaces.R
 import com.example.happyplaces.databinding.ActivityHappyPlaceDetailBinding
+import com.example.happyplaces.models.HappyPlaceModel
 
 class HappyPlaceDetailActivity : AppCompatActivity() {
 
@@ -11,8 +13,27 @@ class HappyPlaceDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_happy_place_detail)
-
         binding = ActivityHappyPlaceDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        var hpm: HappyPlaceModel? = null
+
+        if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
+            hpm = intent.getParcelableExtra(MainActivity.EXTRA_PLACE_DETAILS) as HappyPlaceModel?
+        }
+
+        if (hpm != null) {
+            setSupportActionBar(binding.toolbarHappyPlaceDetail)
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            supportActionBar!!.title = hpm.title
+
+            binding.toolbarHappyPlaceDetail.setNavigationOnClickListener {
+                onBackPressed()
+            }
+
+            binding.ivPlaceImage.setImageURI(Uri.parse(hpm.image))
+            binding.tvDescription.text = hpm.description
+            binding.tvLocation.text = hpm.location
+        }
     }
 }

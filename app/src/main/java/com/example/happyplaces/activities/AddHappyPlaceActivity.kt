@@ -20,10 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import com.example.happyplaces.R
-import com.example.happyplaces.adapters.HappyPlaceAdapter
 import com.example.happyplaces.database.DatabaseHandler
 import com.example.happyplaces.databinding.ActivityAddHappyPlaceBinding
-import com.example.happyplaces.databinding.ActivityMainBinding
 import com.example.happyplaces.models.HappyPlaceModel
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -46,6 +44,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
     private var imagePath: Uri? = null
     private var mLatitude: Double = 0.0
     private var mLongitude: Double = 0.0
+    private var mHappyPlaceDetails: HappyPlaceModel? = null
 
     private val selectImageFromGalleryResult =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -76,12 +75,33 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
             onBackPressed()
         }
 
+        if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
+            mHappyPlaceDetails =
+                intent.getParcelableExtra(MainActivity.EXTRA_PLACE_DETAILS) as HappyPlaceModel?
+        }
+
         dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
 
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, month)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             updateDateInView()
+        }
+
+        if (mHappyPlaceDetails != null) {
+            supportActionBar?.title = "Edit Happy Place"
+
+            binding.etTitle.setText(mHappyPlaceDetails!!.title)
+            binding.etDescription.setText(mHappyPlaceDetails!!.description)
+            binding.etDate.setText(mHappyPlaceDetails!!.date)
+            binding.etLocation.setText(mHappyPlaceDetails!!.location)
+            mLatitude = mHappyPlaceDetails!!.latitude
+            mLongitude = mHappyPlaceDetails!!.longitude
+
+            imagePath = Uri.parse(mHappyPlaceDetails!!.image)
+            binding.ivPlaceImage.setImageURI(imagePath)
+
+            binding.btnSave.text = "UPDATE"
         }
 
         binding.etDate.setOnClickListener(this)
@@ -133,8 +153,11 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                         Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
+                        val dbh = DatabaseHandler(this)
+                        val id = if (mHappyPlaceDetails == null) 0 else mHappyPlaceDetails!!.id
+
                         val hpm = HappyPlaceModel(
-                            0,
+                            id,
                             binding.etTitle.text.toString(),
                             imagePath.toString(),
                             binding.etDescription.text.toString(),
@@ -144,16 +167,18 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                             mLongitude
                         )
 
-                        val dbh = DatabaseHandler(this)
-                        val result = dbh.addHappyPlace(hpm)
+                        val result = if (mHappyPlaceDetails == null) {
+                            dbh.addHappyPlace(hpm)
+                        } else {
+                            dbh.updateHappyPlace(hpm)
+                        }
 
-                        if (result > 0) {
-                            Toast.makeText(
-                                this,
-                                "The happy place is created successfully!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        if(result > 0){
                             setResult(Activity.RESULT_OK)
+                            finish()
+                        } else {
+                            Log.e("AddHappyPlaceActivity: ", "Something went wrong")
+                            setResult(Activity.RESULT_CANCELED)
                             finish()
                         }
                     }
