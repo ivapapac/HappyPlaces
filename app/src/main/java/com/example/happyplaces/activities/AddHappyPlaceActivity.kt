@@ -1,6 +1,7 @@
 package com.example.happyplaces.activities
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
@@ -19,8 +20,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import com.example.happyplaces.R
+import com.example.happyplaces.adapters.HappyPlaceAdapter
 import com.example.happyplaces.database.DatabaseHandler
 import com.example.happyplaces.databinding.ActivityAddHappyPlaceBinding
+import com.example.happyplaces.databinding.ActivityMainBinding
 import com.example.happyplaces.models.HappyPlaceModel
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -69,6 +72,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.toolbarAddPlace.setNavigationOnClickListener {
+            setResult(Activity.RESULT_CANCELED)
             onBackPressed()
         }
 
@@ -149,6 +153,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                                 "The happy place is created successfully!",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            setResult(Activity.RESULT_OK)
                             finish()
                         }
                     }

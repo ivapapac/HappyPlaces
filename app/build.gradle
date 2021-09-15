@@ -49,4 +49,7 @@ dependencies {
 
     // Dexter
     implementation 'com.karumi:dexter:6.2.3'
+
+    // Circle Image View
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

@@ -7,7 +7,9 @@
         <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/drawable/shape_button_rounded.xml" value="0.4203125" />
         <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/drawable/shape_image_view_border.xml" value="0.246875" />
         <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/layout/activity_add_happy_place.xml" value="0.4" />
+        <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/layout/activity_happy_place_detail.xml" value="0.4041666666666667" />
         <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Work/apps/android/HappyPlaces/app/src/main/res/layout/item_happy_place.xml" value="0.4041666666666667" />
       </map>
     </option>
   </component>
