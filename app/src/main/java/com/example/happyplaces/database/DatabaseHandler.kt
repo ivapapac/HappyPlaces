@@ -116,4 +116,14 @@ class DatabaseHandler(context: Context) :
 
         return result
     }
+
+    fun removeHappyPlace(hpm: HappyPlaceModel): Int {
+        val db = this.writableDatabase
+        val whereClause = "$KEY_ID = ${hpm.id}"
+
+        val result = db.delete(TABLE_HAPPY_PLACE, whereClause, null)
+        db.close()
+
+        return result
+    }
 }
